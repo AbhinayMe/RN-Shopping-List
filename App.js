@@ -1,12 +1,64 @@
-import React from 'react';
-import { View, Text, StyleSheet, Image } from 'react-native';
+import React, { useState } from 'react';
+import { View, Text, StyleSheet, FlatList, Alert, ToastAndroid } from 'react-native';
+import Header from './components/Header';
+import ListItem from './components/ListItem';
+import AddItem from './components/AddItem';
+import { uuid } from 'uuidv4';
 
 const App = () => {
 
+  const [items, setItems] = useState([
+    { id: uuid(), text: 'Milk' },
+    { id: uuid(), text: 'Eggs' },
+    { id: uuid(), text: 'Bread' },
+    { id: uuid(), text: 'Juice' },
+    { id: uuid(), text: 'Jam' },
+  ]);
+
+  const deleteItem = (id) => {
+    setItems(prevItems => {
+      console.log("prevItems delete: " + prevItems.filter(item => item.id));
+      return prevItems.filter(item => item.id != id);
+    });
+  }
+
+  const addItem = (text) => {
+    if (!text) {
+      console.log(uuid());
+      Alert.alert('Error', 'Please enter an item', [{ text: 'Ok' }]);
+      // Alert.alert(
+      //   'Error',
+      //   'please enter add item title',
+      //   [{
+      //     text: 'OKKK'
+      //     // ,onPress: () => ToastAndroid.show('Ask me later pressed', ToastAndroid.LONG)
+      //   }]);
+    } else {
+      setItems(prevItems => {
+        console.log("prevItems count: " + prevItems.length);
+
+        let uuidTemp = uuid();
+        console.log("addItem uuid: " + uuidTemp);
+        console.log("addItem text: " + text);
+
+        let newItem = { id: uuidTemp, text };
+
+        return [newItem, ...prevItems];
+      });
+    }
+
+  }
+
   return (
     <View style={styles.container}>
-      <Text style={styles.text}>Hello World!</Text>
-      <Image source={{ uri: 'https://randomuser.me/api/portraits/men/1.jpg' }} style={styles.img} />
+      <Header />
+      <AddItem addItem={addItem} />
+      <FlatList
+        data={items}
+        renderItem={({ item }) => (
+          <ListItem item={item} deleteItem={deleteItem} />
+        )}
+      />
     </View>
   )
 };
@@ -14,21 +66,8 @@ const App = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    backgroundColor: 'plum'
+    paddingTop: 0,
   },
-  text: {
-    color: 'turquoise',
-    backgroundColor: 'green',
-    fontSize: 32
-  },
-  img: {
-    height: 100,
-    width: 100,
-    borderRadius: 100 / 2,
-    margin: 20
-  }
 })
 
 export default App;
